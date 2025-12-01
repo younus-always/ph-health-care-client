@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import Hero from "@/components/modules/Home/Hero";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,8 +9,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div>
-      <h1>Welcome to ph health care</h1>
-      <Button>Click Me</Button>
+      <Hero />
     </div>
   )
 }
