@@ -1,3 +1,4 @@
+import PublicFooter from "@/components/modules/shared/PublicFooter"
 import PublicNavbar from "@/components/modules/shared/PublicNavbar"
 
 interface IProps {
@@ -9,6 +10,7 @@ export default function CommonLayout({ children }: IProps) {
             <>
                   <PublicNavbar />
                   {children}
+                  <PublicFooter />
             </>
       )
 }

@@ -13,6 +13,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Menu } from "lucide-react";
+import { ModeToggle } from "../DarkMode/ModeToggle";
 
 export default function PublicNavbar() {
       const navlinks = [
@@ -25,14 +26,14 @@ export default function PublicNavbar() {
 
       return (
             <header className="bg-background/95 backdrop-blur sticky top-0 z-50 border-b">
-                  <div className="max-w-7xl mx-auto h-16 px-4 xl:px-0 flex items-center justify-between">
+                  <div className="container mx-auto h-16 px-4 flex items-center justify-between">
                         <div className="w-full flex items-center justify-between">
                               <h3 className="text-lg font-semibold text-primary">
                                     <Link href={"/"}>PH Health Care</Link>
                               </h3>
 
-                              <nav className="hidden md:block">
-                                    <ul className="flex items-center gap-3">
+                              <nav className="hidden lg:block">
+                                    <ul className="flex items-center gap-4">
                                           {
                                                 navlinks.map((item) => (
                                                       <li key={item.id}>
@@ -43,16 +44,20 @@ export default function PublicNavbar() {
                                     </ul>
                               </nav>
 
-                              <div className="hidden md:flex items-center gap-3">
-
+                              <div className="hidden lg:flex items-center gap-3">
+                                    <ModeToggle />
                                     <Link href={"/login"}>
                                           <Button>Login</Button>
                                     </Link>
                               </div>
                         </div>
 
+                        {/* mobile theme toggle */}
+                        <div className="lg:hidden mr-3">
+                              <ModeToggle />
+                        </div>
                         {/* mobile menu */}
-                        <div className="md:hidden">
+                        <div className="lg:hidden">
                               <Sheet>
                                     <SheetTrigger asChild>
                                           <Button variant="outline"><Menu /></Button>
