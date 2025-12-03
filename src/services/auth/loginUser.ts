@@ -1,5 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
+import z from "zod";
+
+const loginValidationZodSchema = z.object({
+      email: z.email({ error: "Invalid email address" }),
+      password: z
+            .string({ error: "Password is required" })
+            .min(8, { error: "Password must be at least 8 characters long" })
+            .max(14, { error: "Password must be at most 14 characters long" })
+});
 
 export const loginUser = async (_currentState: any, formData: any) => {
       try {
@@ -7,6 +16,20 @@ export const loginUser = async (_currentState: any, formData: any) => {
                   email: formData.get("email"),
                   password: formData.get("password")
             };
+            const validatedFields = loginValidationZodSchema.safeParse(loginData);
+
+            if (!validatedFields.success) {
+                  return {
+                        success: false,
+                        errors: validatedFields.error.issues.map(issue => {
+                              return {
+                                    field: issue.path[0],
+                                    message: issue.message
+                              }
+                        })
+                  };
+            };
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_ULR}/auth/login`, {
                   method: "POST",
                   headers: {

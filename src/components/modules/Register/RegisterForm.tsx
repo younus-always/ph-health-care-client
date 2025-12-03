@@ -23,6 +23,7 @@ const RegisterForm = () => {
                   return null;
             }
       };
+
       return (
             <form action={formAction}>
                   <FieldGroup>

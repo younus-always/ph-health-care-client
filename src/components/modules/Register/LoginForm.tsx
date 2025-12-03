@@ -20,6 +20,7 @@ const LoginForm = () => {
             }
       };
       console.log(state);
+
       return (
             <form action={formAction}>
                   <FieldGroup>
@@ -32,7 +33,6 @@ const LoginForm = () => {
                                           name="email"
                                           type="email"
                                           placeholder="m@example.com"
-                                    //   required
                                     />
 
                                     {getFieldError("email") && (
@@ -50,7 +50,6 @@ const LoginForm = () => {
                                           name="password"
                                           type="password"
                                           placeholder="Enter your password"
-                                    //   required
                                     />
                                     {getFieldError("password") && (
                                           <FieldDescription className="text-red-600">
