@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
+
 import z from "zod";
 import { parse } from "cookie";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { getDefaultDashboardRoutes, isValidRedirectForRole, UserRole } from "@/lib/auth-utils";
+import { setCookie } from "./tokenHandlers";
 
 const loginValidationZodSchema = z.object({
       email: z.email({ error: "Invalid email address" }),
@@ -64,7 +64,7 @@ export const loginUser = async (_currentState: any, formData: any) => {
                   });
             } else {
                   throw new Error("No set-cookie header found")
-            }
+            };
 
             if (!accessTokenObject) {
                   throw new Error("Tokens not found in cookies")
@@ -73,14 +73,13 @@ export const loginUser = async (_currentState: any, formData: any) => {
                   throw new Error("Tokens not found in cookies")
             };
 
-            const cookieStore = await cookies();
-            cookieStore.set("accessToken", accessTokenObject.accessToken, {
+            await setCookie("accessToken", accessTokenObject.accessToken, {
                   httpOnly: true,
                   secure: true,
                   maxAge: parseInt(accessTokenObject.maxAge),
                   path: accessTokenObject.Path || "/",
             });
-            cookieStore.set("refreshToken", refreshTokenObject.refreshToken, {
+            await setCookie("refreshToken", refreshTokenObject.refreshToken, {
                   httpOnly: true,
                   secure: true,
                   maxAge: parseInt(refreshTokenObject.maxAge),
@@ -94,13 +93,19 @@ export const loginUser = async (_currentState: any, formData: any) => {
             };
             const userRole: UserRole = verifiedToken.role;
 
+            if (!result.success) {
+                  throw new Error(result.message || "Login failed")
+            };
+
             if (redirectTo) {
                   const requestedPath = redirectTo.toString();
                   if (isValidRedirectForRole(requestedPath, userRole)) {
-                        redirect(requestedPath);
+                        redirect(`${requestedPath}?loggedIn=true`);
                   } else {
-                        redirect(getDefaultDashboardRoutes(userRole));
+                        redirect(`${getDefaultDashboardRoutes(userRole)}?loggedIn=true`);
                   }
+            } else {
+                  redirect(`${getDefaultDashboardRoutes(userRole)}?loggedIn=true`);
             };
 
       } catch (error: any) {
@@ -109,6 +114,9 @@ export const loginUser = async (_currentState: any, formData: any) => {
                   throw error;
             };
             console.log(error);
-            return { error: "Login failed" }
+            return {
+                  success: false,
+                  message: `${process.env.NODE_ENV === "development" ? error.message : "Login failed"}`
+            }
       }
 };

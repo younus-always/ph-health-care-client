@@ -1,4 +1,4 @@
-import LoginForm from "@/components/modules/Register/LoginForm";
+import LoginForm from "@/components/modules/Auth/LoginForm";
 
 export default async function LoginPage({ searchParams }
       : { searchParams?: Promise<{ redirect?: string }> }) {
