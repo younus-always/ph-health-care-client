@@ -3,6 +3,10 @@
 import z from "zod";
 import { parse } from "cookie";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { NextResponse } from "next/server";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { getDefaultDashboardRoutes, isValidRedirectForRole, UserRole } from "@/lib/auth-utils";
 
 const loginValidationZodSchema = z.object({
       email: z.email({ error: "Invalid email address" }),
@@ -16,6 +20,7 @@ export const loginUser = async (_currentState: any, formData: any) => {
       try {
             let accessTokenObject: null | any = null;
             let refreshTokenObject: null | any = null;
+            const redirectTo = formData.get("redirect");
 
             const loginData = {
                   email: formData.get("email"),
@@ -82,8 +87,27 @@ export const loginUser = async (_currentState: any, formData: any) => {
                   path: refreshTokenObject.Path || "/",
             });
 
-            return result;
-      } catch (error) {
+            const verifiedToken: string | JwtPayload = jwt.verify(accessTokenObject.accessToken, process.env.JWT_SECRET as string);
+
+            if (typeof verifiedToken === "string") {
+                  throw new Error("Invalid token")
+            };
+            const userRole: UserRole = verifiedToken.role;
+
+            if (redirectTo) {
+                  const requestedPath = redirectTo.toString();
+                  if (isValidRedirectForRole(requestedPath, userRole)) {
+                        redirect(requestedPath);
+                  } else {
+                        redirect(getDefaultDashboardRoutes(userRole));
+                  }
+            };
+
+      } catch (error: any) {
+            // Re-throw NEXT_REDIRECT errors so Next.js can handle them
+            if (error?.digest?.startsWith('NEXT_REDIRECT')) {
+                  throw error;
+            };
             console.log(error);
             return { error: "Login failed" }
       }
