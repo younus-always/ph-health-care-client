@@ -1,5 +1,7 @@
+import DashboardNavbar from "@/components/modules/Dashboard/DashboardNavbar";
+import DashboardSidebar from "@/components/modules/Dashboard/DashboardSidebar";
 
-export default async function CommonDashboardLayout({ children }: { children: React.ReactNode }) {
+const CommonDashboardLayout = async ({ children }: { children: React.ReactNode }) => {
       return (
             <div className="flex h-screen overflow-hidden">
                   <DashboardSidebar />
@@ -12,3 +14,5 @@ export default async function CommonDashboardLayout({ children }: { children: Re
             </div>
       )
 }
+
+export default CommonDashboardLayout;
