@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import z from "zod";
+import { loginUser } from "./loginUser";
 
 const registerValidationZodSchema = z.object({
       name: z.string().min(1, { error: "Name is required" }),
@@ -57,11 +58,23 @@ export const registerPatient = async (_currentState: any, formData: any): Promis
             const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/create-patient`, {
                   method: "POST",
                   body: JSON.stringify(registerData)
-            }).then(res => res.json());
+            });
+            const result = await res.json();
 
-            return res;
-      } catch (error) {
+            if (result.success) {
+                  await loginUser(_currentState, formData);
+            }
+
+            return result;
+      } catch (error: any) {
+            // Re-throw NEXT_REDIRECT errors so Next.js can handle them
+            if (error?.digest?.startsWith('NEXT_REDIRECT')) {
+                  throw error;
+            };
             console.log(error);
-            return { error: "Registration failed" }
+            return {
+                  success: false,
+                  message: `${process.env.NODE_ENV === "development" ? error.message : "Registration failed. Please try again"}`
+            }
       }
 };

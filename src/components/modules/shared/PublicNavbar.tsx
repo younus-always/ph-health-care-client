@@ -8,8 +8,10 @@ import {
 } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { ModeToggle } from "../DarkMode/ModeToggle";
+import { getCookie } from "@/services/auth/tokenHandlers";
+import LogoutButton from "./LogoutButton";
 
-export default function PublicNavbar() {
+export default async function PublicNavbar() {
       const navlinks = [
             { id: 1, name: "Home", href: "/" },
             { id: 2, name: "Consultation", href: "/consultation" },
@@ -17,6 +19,9 @@ export default function PublicNavbar() {
             { id: 4, name: "Diagnostics", href: "/diagnostics" },
             { id: 5, name: "NGOs", href: "/ngos" },
       ];
+
+      const accessToken = await getCookie("accessToken");
+      const isLoggedIn = accessToken ? true : false;
 
       return (
             <header className="bg-background/95 backdrop-blur sticky top-0 z-50 border-b">
@@ -40,9 +45,11 @@ export default function PublicNavbar() {
 
                               <div className="hidden lg:flex items-center gap-3">
                                     <ModeToggle />
-                                    <Link href={"/login"}>
-                                          <Button>Login</Button>
-                                    </Link>
+                                    {accessToken
+                                          ? <LogoutButton />
+                                          : <Link href={"/login"}>
+                                                <Button>Login</Button>
+                                          </Link>}
                               </div>
                         </div>
 
@@ -70,9 +77,11 @@ export default function PublicNavbar() {
                                                 </ul>
                                                 <div className="flex flex-col space-y-4 pt-4 border-t">
                                                       <div className="flex justify-center"></div>
-                                                      <Link href={"/login"} className="text-lg font-medium">
-                                                            <Button>Login</Button>
-                                                      </Link>
+                                                      {accessToken
+                                                            ? <LogoutButton />
+                                                            : <Link href={"/login"}>
+                                                                  <Button>Login</Button>
+                                                            </Link>}
                                                 </div>
                                           </nav>
                                     </SheetContent>

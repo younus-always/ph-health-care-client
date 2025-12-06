@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "Health Care Home Page",
 };
 
-export default function Home() {
+export default function HomePage() {
   return (
     <>
       <Head>
